@@ -12,6 +12,7 @@ public class MonAn implements Serializable {
   private final StringProperty maMonAn;
   private final StringProperty tenMonAn;
   private final IntegerProperty donGia;
+  private int soLuong;
 
   // Phương thức khởi tạo mặc định
   public MonAn() {
@@ -64,5 +65,13 @@ public class MonAn implements Serializable {
 
   public IntegerProperty donGiaProperty() {
     return donGia;
+  }
+
+  public int getSoLuong() {
+    return soLuong;
+  }
+
+  public void setSoLuong(int soLuong) {
+    this.soLuong = soLuong;
   }
 }
