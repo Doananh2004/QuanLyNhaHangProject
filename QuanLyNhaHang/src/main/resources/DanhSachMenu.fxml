@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1">
+    <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+        <ImageView fx:id="searchIcon" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
+        <TextField fx:id="txtTimKiem" promptText="Tìm kiếm..." />
+    </HBox>
+   <TableView fx:id="tblMenu" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+     <columns>
+       <TableColumn fx:id="maMonAnColumn" prefWidth="100.0" text="Mã món ăn" />
+       <TableColumn fx:id="tenMonAnColumn" prefWidth="300.0" text="Tên món ăn" />
+         <TableColumn fx:id="donGiaColumn" prefWidth="200.0" text="Đơn giá" />
+     </columns>
+   </TableView>
+    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+        <Button fx:id="btnThem" mnemonicParsing="false" text="Thêm">
+            <graphic>
+                <ImageView fx:id="addIcon" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
+            </graphic>
+        </Button>
+        <Button fx:id="btnXoa" mnemonicParsing="false" text="Xoá">
+            <graphic>
+                <ImageView fx:id="eraseIcon" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
+            </graphic>
+        </Button>
+        <Button fx:id="btnChinhSua" mnemonicParsing="false" text="Chỉnh sửa">
+            <graphic>
+                <ImageView fx:id="editIcon" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
+            </graphic>
+        </Button>
+        <Button fx:id="btnThoat" mnemonicParsing="false" text="Thoát">
+            <graphic>
+                <ImageView fx:id="closeIcon" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
+            </graphic>
+        </Button>
+    </HBox>
+</VBox>
