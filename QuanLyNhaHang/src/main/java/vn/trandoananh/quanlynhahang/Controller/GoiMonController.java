@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import vn.trandoananh.quanlynhahang.Models.MonAn;
 import vn.trandoananh.quanlynhahang.Utils.BanAnService;
 import vn.trandoananh.quanlynhahang.Utils.GoiMonService;
@@ -14,6 +15,7 @@ import vn.trandoananh.quanlynhahang.Utils.MenuService;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Objects;
+import java.util.Vector;
 
 public class GoiMonController {
   @FXML
@@ -83,26 +85,96 @@ public class GoiMonController {
   }
 
   private void themMonAn() {
-    MonAn selectedMonAn = tblDsMenuNhaHang.getSelectionModel().getSelectedItem();
-    if (selectedMonAn != null) {
-      try {
-        int soLuong = Integer.parseInt(txtSoLuong.getText());
-        if (soLuong < 1) throw new NumberFormatException();
+    // Get the selected row from the TableView
+    int rowSelected = tblDsMenuNhaHang.getSelectionModel().getSelectedIndex();
 
-        goiMonService.themMonAn(maTang, maBan, selectedMonAn, soLuong);
+    if (rowSelected != -1) {
+      // Retrieve the selected MonAn item from the TableView
+      MonAn selectedMonAn = tblDsMenuNhaHang.getItems().get(rowSelected);
 
-        DecimalFormat df = new DecimalFormat("#,###");
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Thêm món thành công!", ButtonType.OK);
-        alert.setHeaderText("Tổng giá: " + df.format((long) selectedMonAn.getDonGia() * soLuong));
-        alert.show();
-      } catch (NumberFormatException e) {
-        Alert alert = new Alert(Alert.AlertType.ERROR, "Số lượng phải là số nguyên dương!", ButtonType.OK);
+      // Get the quantity from the text field
+      String strSoLuong = txtSoLuong.getText();
+
+      // Validate the quantity input
+      if (strSoLuong != null && !strSoLuong.trim().isEmpty()) {
+        if (strSoLuong.matches("^\\d+$")) { // Check if it's a valid positive integer
+          int soLuong = Integer.parseInt(strSoLuong);
+
+          if (soLuong >= 1) {
+            // Call the service to add the MonAn to the order
+            goiMonService.themMonAn(maTang, maBan, selectedMonAn, soLuong);
+
+            // Display total price in an alert
+            DecimalFormat df = new DecimalFormat("#,###");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Thêm món thành công!", ButtonType.OK);
+            alert.setHeaderText("Tổng giá: " + df.format((long) selectedMonAn.getDonGia() * soLuong));
+            alert.show();
+
+            // Refresh the menu list
+            hienThiThucDonBanAn(maTang, maBan);
+
+            // Update table status based on the number of items
+            if (goiMonService.laySoLuongMonAn(maTang, maBan) > 0) {
+              banAnService.setTrangThaiBanAn(maTang, maBan, "busy");
+            } else {
+              banAnService.setTrangThaiBanAn(maTang, maBan, "active");
+            }
+
+            // Update the table status
+            capNhatTrangThaiBanAn(maTang);
+
+          } else {
+            // Show an error alert if quantity is less than 1
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Số lượng ít nhất phải là 1", ButtonType.OK);
+            alert.show();
+          }
+        } else {
+          // Show an error alert if the quantity format is invalid
+          Alert alert = new Alert(Alert.AlertType.ERROR, "Số lượng nhập không đúng định dạng!", ButtonType.OK);
+          alert.show();
+        }
+      } else {
+        // Show an error alert if quantity is empty
+        Alert alert = new Alert(Alert.AlertType.WARNING, "Số lượng không được để trống!", ButtonType.OK);
         alert.show();
       }
     } else {
+      // Show an error alert if no item is selected
       Alert alert = new Alert(Alert.AlertType.WARNING, "Vui lòng chọn món ăn cần thêm!", ButtonType.OK);
       alert.show();
     }
   }
 
+  private void hienThiThucDonBanAn(String maTang, String maBan) {
+    // Clear existing data from TableView
+    tblDsMenuNhaHang.getItems().clear();
+
+    // Get the list of dishes (MonAn) for the selected floor and table
+    GoiMonService goiMonService = new GoiMonService();
+    Vector<MonAn> dsThucDonTheoBan = goiMonService.layDsThucDonTheoBan(maTang, maBan);
+
+    // Loop through the list of MonAn and add them to the TableView
+    for (MonAn monAn : dsThucDonTheoBan) {
+      // Add the MonAn object directly to the TableView
+      tblDsMenuNhaHang.getItems().add(monAn);
+    }
+  }
+
+  private void capNhatTrangThaiBanAn(String maTang) {
+    for(int j=1;j<=12;j++) {
+      String ban = String.valueOf(j);
+      // Kiểm tra số lượng món ăn trên bàn
+      GoiMonService goiMonService = new GoiMonService();
+      int soLuongMonAn = goiMonService.laySoLuongMonAn(maTang, ban);
+      String trangThai = soLuongMonAn > 0 ? "busy" : "active";
+
+      HBox[] pnStatusBanAn = new HBox[12];
+      HBox pnStatus = pnStatusBanAn[j - 1];
+      if (trangThai.equals("active")) {
+        pnStatus.setStyle("-fx-background-color: green;");
+      } else if (trangThai.equals("busy")) {
+        pnStatus.setStyle("-fx-background-color: red;");
+      }
+    }
+  }
 }

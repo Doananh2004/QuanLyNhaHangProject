@@ -3,10 +3,20 @@ package vn.trandoananh.quanlynhahang.Controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import vn.trandoananh.quanlynhahang.Models.MonAn;
+import vn.trandoananh.quanlynhahang.Utils.BanAnService;
+import vn.trandoananh.quanlynhahang.Utils.GoiMonService;
+
+import java.util.Objects;
+import java.util.Vector;
 
 public class QuanLyNhaHangController {
   @FXML
@@ -43,12 +53,6 @@ public class QuanLyNhaHangController {
   private Label selectedTableLabel;
 
   @FXML
-  private HBox pnStatusBanAn;
-
-  @FXML
-  private VBox pnBanAn;
-
-  @FXML
   private Button btnThem;
 
   @FXML
@@ -63,6 +67,12 @@ public class QuanLyNhaHangController {
   @FXML
   private Button btnXacNhanThanhToan;
 
+  @FXML
+  private VBox floorAndTablesPanel;
+
+  @FXML
+  private Label[] banAn;
+
   private String tangDaChon = "1";
   private final String banDaChon = "#";
   private final ObservableList<MonAn> thucDonData = FXCollections.observableArrayList();
@@ -72,6 +82,7 @@ public class QuanLyNhaHangController {
     initializeTableColumns();
     comboTang.setItems(FXCollections.observableArrayList("1", "2", "3"));
     comboTang.setValue("1");
+    setupBanAnPane();
     addEvents();
   }
 
@@ -107,6 +118,7 @@ public class QuanLyNhaHangController {
       tangDaChon = comboTang.getValue();
       selectedTableLabel.setText("Bàn " + banDaChon + " Tầng " + tangDaChon);
       updateTableData();
+      capNhatTrangThaiBanAn();
     });
   }
 
@@ -137,9 +149,20 @@ public class QuanLyNhaHangController {
   }
 
   private void updateTableData() {
-    thucDonData.clear();
-    // Update data based on tangDaChon and banDaChon
-    System.out.println("Updating data for table " + banDaChon + " on floor " + tangDaChon);
+    // Clear existing data from TableView
+    menuTable.getItems().clear();
+
+    // Get the list of dishes (MonAn) for the selected floor and table
+    GoiMonService goiMonService = new GoiMonService();
+    Vector<MonAn> dsThucDonTheoBan = goiMonService.layDsThucDonTheoBan(tangDaChon, banDaChon);
+
+    // Loop through the list of MonAn and add them to the TableView
+    for (MonAn monAn : dsThucDonTheoBan) {
+      // Add the MonAn object directly to the TableView
+      menuTable.getItems().add(monAn);
+    }
+
+    System.out.println("Cập nhật thực đơn cho bàn " + banDaChon + " tầng " + tangDaChon);
   }
 
   private void showAlert(String message) {
@@ -148,5 +171,76 @@ public class QuanLyNhaHangController {
     alert.setHeaderText(null);
     alert.setContentText(message);
     alert.showAndWait();
+  }
+
+  private void setupBanAnPane() {
+    GridPane pnDsBanAn = new GridPane();
+    pnDsBanAn.setHgap(10); // Khoảng cách ngang giữa các phần tử
+    pnDsBanAn.setVgap(10); // Khoảng cách dọc giữa các phần tử
+    pnDsBanAn.setAlignment(Pos.CENTER); // Căn giữa toàn bộ bảng trong container
+
+    VBox[] pnBanAn = new VBox[12];
+    HBox[] pnStatusBanAn = new HBox[12]; // Cập nhật từ Pane[] sang VBox[]
+    banAn = new Label[12];
+
+    for (int i = 0; i < 12; i++) {
+      banAn[i] = new Label("Bàn " + (i + 1));
+      banAn[i].setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/vn/trandoananh/images/table.png")))));
+      banAn[i].setStyle("-fx-background-color: transparent;");
+      banAn[i].setContentDisplay(ContentDisplay.TOP);
+      banAn[i].setTextAlignment(TextAlignment.CENTER);
+
+      // Tạo HBox cho trạng thái bàn
+      pnStatusBanAn[i] = new HBox();
+      pnStatusBanAn[i].setPrefHeight(10); // Chiều cao cố định
+
+      // Tạo VBox cho mỗi bàn ăn
+      pnBanAn[i] = new VBox();
+      pnBanAn[i].setSpacing(5); // Khoảng cách giữa các phần tử trong VBox
+      pnBanAn[i].setAlignment(Pos.CENTER); // Căn giữa nội dung trong VBox
+      pnBanAn[i].setStyle("-fx-border-color: lightgray; -fx-border-width: 2; -fx-border-style: solid;");
+      pnBanAn[i].getChildren().addAll(pnStatusBanAn[i], banAn[i]);
+
+      // Thêm VBox vào GridPane
+      int row = i / 4; // 4 bàn mỗi hàng
+      int col = i % 4;
+      pnDsBanAn.add(pnBanAn[i], col, row);
+    }
+
+    // Gán GridPane vào một khu vực trên giao diện chính
+    floorAndTablesPanel.getChildren().add(pnDsBanAn);
+
+    // Cập nhật trạng thái bàn ăn
+    capNhatTrangThaiBanAn();
+  }
+
+  private void capNhatTrangThaiBanAn() {
+    // Duyệt qua các tầng
+    for (int i = 1; i <= 3; i++) {
+      for (int j = 1; j <= 12; j++) {
+        String tang = String.valueOf(i);
+        String ban = String.valueOf(j);
+
+        // Kiểm tra số lượng món ăn trên bàn
+        GoiMonService goiMonService = new GoiMonService();
+        int soLuongMonAn = goiMonService.laySoLuongMonAn(tang, ban);
+        String trangThai = soLuongMonAn > 0 ? "busy" : "active";
+
+        // Cập nhật trạng thái bàn ăn
+        BanAnService banAnService = new BanAnService();
+        banAnService.setTrangThaiBanAn(tang, ban, trangThai);
+
+        // Cập nhật giao diện
+        if (comboTang.getSelectionModel().getSelectedItem().equals(tang)) {
+          HBox[] pnStatusBanAn = new HBox[12];
+          HBox pnStatus = pnStatusBanAn[j - 1];
+          if (trangThai.equals("active")) {
+            pnStatus.setStyle("-fx-background-color: green;");
+          } else if (trangThai.equals("busy")) {
+            pnStatus.setStyle("-fx-background-color: red;");
+          }
+        }
+      }
+    }
   }
 }
