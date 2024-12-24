@@ -11,11 +11,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+import vn.trandoananh.quanlynhahang.AppQuanLyNhaHang;
 import vn.trandoananh.quanlynhahang.Models.MonAn;
 import vn.trandoananh.quanlynhahang.Utils.BanAnService;
 import vn.trandoananh.quanlynhahang.Utils.GoiMonService;
 
+import java.text.DecimalFormat;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Vector;
 
 public class QuanLyNhaHangController {
@@ -99,62 +102,200 @@ public class QuanLyNhaHangController {
     menuFileExit.setOnAction(_ -> System.exit(0));
 
     menuAdvancedMenu.setOnAction(_ -> {
-      // Implement menu advanced event
-      System.out.println("Advanced menu clicked");
+      DanhSachMenuController danhSachMenuController = new DanhSachMenuController();
+      try {
+        AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/DanhSachMenu.fxml");
+        danhSachMenuController.initialize();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
     });
 
     menuHelpAbout.setOnAction(_ -> {
-      // Implement help about event
-      System.out.println("Help about clicked");
+      AboutController aboutController = new AboutController();
+      try {
+        AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/AboutGUI.fxml");
+        aboutController.initialize();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
     });
 
-    btnThem.setOnAction(_ -> handleAddMenuItem());
+    btnThem.setOnAction(_ -> {
+      try {
+        handleAddMenuItem();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
     btnXoa.setOnAction(_ -> handleRemoveMenuItem());
     btnTinhTien.setOnAction(_ -> handleCalculateTotal());
-    btnXuatThongTin.setOnAction(_ -> handleExportInfo());
+    btnXuatThongTin.setOnAction(_ -> {
+      try {
+        handleExportInfo();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
     btnXacNhanThanhToan.setOnAction(_ -> handleConfirmPayment());
 
     comboTang.setOnAction(_ -> {
       tangDaChon = comboTang.getValue();
       selectedTableLabel.setText("Bàn " + banDaChon + " Tầng " + tangDaChon);
-      updateTableData();
+      updateTableData(tangDaChon,banDaChon);
       capNhatTrangThaiBanAn();
     });
   }
 
-  private void handleAddMenuItem() {
-    showAlert("Vui lòng chọn bàn ăn trước khi thêm món!");
+  private void handleAddMenuItem() throws Exception {
+//    showAlert("Vui lòng chọn bàn ăn trước khi thêm món!");
+    if(!banDaChon.equals("#")){
+      GoiMonController goiMonController = new GoiMonController();
+      AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/GoiMonGUI.fxml");
+      goiMonController.initialize();
+      goiMonController.initData(tangDaChon,banDaChon);
+    } else {
+      Alert alert = new Alert(Alert.AlertType.WARNING);
+      alert.setTitle("Cảnh báo");
+      alert.setHeaderText(null);
+      alert.setContentText("Vui lòng chọn bàn ăn trước khi thêm món!");
+      alert.showAndWait();
+    }
   }
 
   private void handleRemoveMenuItem() {
+    // Get the selected item from the TableView
     MonAn selectedItem = menuTable.getSelectionModel().getSelectedItem();
+
+    GoiMonService goiMonService = new GoiMonService();
     if (selectedItem != null) {
-      thucDonData.remove(selectedItem);
+      // Call the service to remove the item from the menu
+      goiMonService.xoaMonAn(tangDaChon, banDaChon, selectedItem.getMaMonAn());
+
+      // Update the TableView by refreshing the menu
+      updateTableData(tangDaChon,banDaChon);
+
+      // Update the table or other related UI components
+      capNhatTrangThaiBanAn();
+
+      // Log the removal for debugging purposes
       System.out.println("Removed item: " + selectedItem.getTenMonAn());
     } else {
-      showAlert("Vui lòng chọn món ăn cần xóa!");
+      // Show alert if no item is selected
+      if (goiMonService.laySoLuongMonAn(tangDaChon, banDaChon) > 0) {
+        showAlert("Vui lòng chọn món ăn cần xóa!");
+      } else {
+        showAlert("Không có gì để xóa!");
+      }
     }
   }
 
   private void handleCalculateTotal() {
-    showAlert("Vui lòng chọn bàn ăn cần tính tiền!");
+    if (!banDaChon.equals("#")) {
+      // Get the list of menu items for the selected table and floor
+      GoiMonService goiMonService = new GoiMonService();
+      Vector<MonAn> dsMonAnTheoBan = goiMonService.layDsThucDonTheoBan(tangDaChon, banDaChon);
+
+      if (!dsMonAnTheoBan.isEmpty()) {
+        int tongTien = 0;
+        DecimalFormat df = new DecimalFormat("#,###,##0.00");
+
+        // Calculate the total by summing up the cost of each item
+        for (MonAn monAn : dsMonAnTheoBan) {
+          tongTien += monAn.getSoLuong() * monAn.getDonGia();
+        }
+
+        // Display the total amount in an alert
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(null);
+        alert.setContentText("Tổng số tiền là: " + df.format(tongTien) + " đồng.");
+        alert.show();
+      } else {
+        // If the table is empty, show a warning
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setHeaderText(null);
+        alert.setContentText("Bàn ăn đang trống!");
+        alert.show();
+      }
+    } else {
+      // If no table is selected, show a warning
+      Alert alert = new Alert(Alert.AlertType.WARNING);
+      alert.setHeaderText(null);
+      alert.setContentText("Vui lòng chọn bàn ăn cần tính tiền!");
+      alert.show();
+    }
   }
 
-  private void handleExportInfo() {
-    showAlert("Vui lòng chọn bàn ăn cần xuất thông tin!");
+  private void handleExportInfo() throws Exception {
+    if (!banDaChon.equals("#")) {
+      // Get the list of menu items for the selected table and floor
+      GoiMonService goiMonService = new GoiMonService();
+      Vector<MonAn> dsThucDon = goiMonService.layDsThucDonTheoBan(tangDaChon, banDaChon);
+
+      if (!dsThucDon.isEmpty()) {
+        // Create and show the export information dialog
+        XuatThongTinController xuatThongTinController = new XuatThongTinController();
+        AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/XuatThongTinGUI.fxml");
+        xuatThongTinController.initialize(dsThucDon);
+
+      } else {
+        // If the table is empty, show a warning
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setHeaderText(null);
+        alert.setContentText("Bàn ăn đang trống!");
+        alert.show();
+      }
+    } else {
+      // If no table is selected, show a warning
+      Alert alert = new Alert(Alert.AlertType.WARNING);
+      alert.setHeaderText(null);
+      alert.setContentText("Vui lòng chọn bàn ăn cần xuất thông tin!");
+      alert.show();
+    }
   }
 
   private void handleConfirmPayment() {
-    showAlert("Vui lòng chọn bàn cần thanh toán!");
+    if (!banDaChon.equals("#")) {
+      // Check if there are items in the menu for the selected table
+      if (!menuTable.getItems().isEmpty()) {
+        // Display a confirmation dialog
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirm");
+        alert.setHeaderText("Xác nhận đã thanh toán");
+        alert.setContentText("Bạn có chắc chắn muốn thanh toán?");
+
+        // Show the confirmation dialog and check the result
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+          // If confirmed, clear the menu items and update the table status
+          GoiMonService goiMonService = new GoiMonService();
+          goiMonService.xoaMonAn(tangDaChon, banDaChon);
+          updateTableData(tangDaChon, banDaChon);
+          capNhatTrangThaiBanAn();
+        }
+      } else {
+        // If the table is empty, show a warning
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setHeaderText(null);
+        alert.setContentText("Bàn ăn đang trống!");
+        alert.show();
+      }
+    } else {
+      // If no table is selected, show a warning
+      Alert alert = new Alert(Alert.AlertType.WARNING);
+      alert.setHeaderText(null);
+      alert.setContentText("Vui lòng chọn bàn cần thanh toán!");
+      alert.show();
+    }
   }
 
-  private void updateTableData() {
+  private void updateTableData(String maTang, String maBan) {
     // Clear existing data from TableView
     menuTable.getItems().clear();
 
     // Get the list of dishes (MonAn) for the selected floor and table
     GoiMonService goiMonService = new GoiMonService();
-    Vector<MonAn> dsThucDonTheoBan = goiMonService.layDsThucDonTheoBan(tangDaChon, banDaChon);
+    Vector<MonAn> dsThucDonTheoBan = goiMonService.layDsThucDonTheoBan(maTang,maBan);
 
     // Loop through the list of MonAn and add them to the TableView
     for (MonAn monAn : dsThucDonTheoBan) {
@@ -185,7 +326,7 @@ public class QuanLyNhaHangController {
 
     for (int i = 0; i < 12; i++) {
       banAn[i] = new Label("Bàn " + (i + 1));
-      banAn[i].setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/vn/trandoananh/images/table.png")))));
+      banAn[i].setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/vn/trandoananh/quanlynhahang/images/table.png")))));
       banAn[i].setStyle("-fx-background-color: transparent;");
       banAn[i].setContentDisplay(ContentDisplay.TOP);
       banAn[i].setTextAlignment(TextAlignment.CENTER);

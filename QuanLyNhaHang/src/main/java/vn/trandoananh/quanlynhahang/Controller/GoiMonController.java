@@ -66,6 +66,7 @@ public class GoiMonController {
   }
 
   public void initData(String maTang, String maBan) {
+    System.out.println("Gọi món bàn " + maBan + " tầng " +maTang);
     this.maTang = maTang;
     this.maBan = maBan;
     hienThiMenuNhaHang();
