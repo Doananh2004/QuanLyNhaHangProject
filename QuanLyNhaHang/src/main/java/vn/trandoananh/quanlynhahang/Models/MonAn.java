@@ -12,13 +12,16 @@ public class MonAn implements Serializable {
   private final StringProperty maMonAn;
   private final StringProperty tenMonAn;
   private final IntegerProperty donGia;
-  private int soLuong;
+  private IntegerProperty soLuong;
+  private IntegerProperty thanhTien;
 
   // Phương thức khởi tạo mặc định
   public MonAn() {
     this.maMonAn = new SimpleStringProperty();
     this.tenMonAn = new SimpleStringProperty();
     this.donGia = new SimpleIntegerProperty();
+    this.soLuong = new SimpleIntegerProperty();
+    this.thanhTien = new SimpleIntegerProperty();
   }
 
   // Phương thức khởi tạo với tham số
@@ -67,11 +70,31 @@ public class MonAn implements Serializable {
     return donGia;
   }
 
+  // Getter và Setter cho soLuong
   public int getSoLuong() {
-    return soLuong;
+    return soLuong.get();
   }
 
   public void setSoLuong(int soLuong) {
-    this.soLuong = soLuong;
+    this.soLuong.set(soLuong);
+    updateThanhTien(); // Cập nhật thanhTien khi soLuong thay đổi
+  }
+
+  public IntegerProperty soLuongProperty() {
+    return soLuong;
+  }
+
+  // Getter và Setter cho thanhTien
+  public int getThanhTien() {
+    return thanhTien.get();
+  }
+
+  private void updateThanhTien() {
+    this.thanhTien.set(this.donGia.get() * this.soLuong.get());
+  }
+
+  public IntegerProperty thanhTienProperty() {
+    return thanhTien;
   }
 }
+
