@@ -318,6 +318,9 @@ public class QuanLyNhaHangController {
     int rowIndex = 0;
     int columnIndex = 0;
 
+    pnDsBanAn.setHgap(10);
+    pnDsBanAn.setVgap(10);
+
     for (int i = 1; i <= numberOfTables; i++) {
       VBox pnBanAn = new VBox();
       pnBanAn.setAlignment(Pos.CENTER);
