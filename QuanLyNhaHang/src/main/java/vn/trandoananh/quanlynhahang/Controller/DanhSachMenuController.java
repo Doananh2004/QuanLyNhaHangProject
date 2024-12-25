@@ -38,7 +38,7 @@ public class DanhSachMenuController {
   public void initialize() {
     // Gán icon cho các nút
     searchIcon.setImage(new Image(Objects.requireNonNull(getClass().getResource("/vn/trandoananh/quanlynhahang/images/search.png")).toString()));
-    addIcon.setImage(new Image(Objects.requireNonNull(getClass().getResource("/vn/trandoananh/images/add.png")).toString()));
+    addIcon.setImage(new Image(Objects.requireNonNull(getClass().getResource("/vn/trandoananh/quanlynhahang/images/add.png")).toString()));
     eraseIcon.setImage(new Image(Objects.requireNonNull(getClass().getResource("/vn/trandoananh/quanlynhahang/images/erase.png")).toString()));
     editIcon.setImage(new Image(Objects.requireNonNull(getClass().getResource("/vn/trandoananh/quanlynhahang/images/edit.png")).toString()));
     closeIcon.setImage(new Image(Objects.requireNonNull(getClass().getResource("/vn/trandoananh/quanlynhahang/images/close.png")).toString()));
