@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import vn.trandoananh.quanlynhahang.Models.MonAn;
 import vn.trandoananh.quanlynhahang.Utils.BanAnService;
@@ -48,21 +47,9 @@ public class GoiMonController {
   private final ObservableList<MonAn> dsMonAn = FXCollections.observableArrayList();
 
   public void initialize() {
-    if (colMaMonAn != null) {
-      colMaMonAn.setCellValueFactory(new PropertyValueFactory<>("maMonAn"));
-    } else {
-      System.err.println("colMaMonAn is null!");
-    }
-    if (colTenMonAn != null) {
-      colTenMonAn.setCellValueFactory(new PropertyValueFactory<>("tenMonAn"));
-    } else {
-      System.err.println("colTenMonAn is null!");
-    }
-    if (colDonGia != null) {
-      colDonGia.setCellValueFactory(new PropertyValueFactory<>("donGia"));
-    } else {
-      System.err.println("colDonGia is null!");
-    }
+    colMaMonAn.setCellValueFactory(cellData -> cellData.getValue().maMonAnProperty());
+    colTenMonAn.setCellValueFactory(cellData -> cellData.getValue().tenMonAnProperty());
+    colDonGia.setCellValueFactory(cellData -> cellData.getValue().donGiaProperty().asObject());
 
     tblDsMenuNhaHang.setItems(dsMonAn);
 
