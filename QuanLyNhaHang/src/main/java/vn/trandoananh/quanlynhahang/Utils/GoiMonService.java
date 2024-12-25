@@ -2,7 +2,6 @@ package vn.trandoananh.quanlynhahang.Utils;
 
 import vn.trandoananh.quanlynhahang.Models.MonAn;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Vector;
