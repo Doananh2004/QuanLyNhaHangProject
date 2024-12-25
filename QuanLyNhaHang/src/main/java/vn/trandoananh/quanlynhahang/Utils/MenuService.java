@@ -4,15 +4,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import vn.trandoananh.quanlynhahang.Models.MonAn;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class MenuService {
-  private final Connection conn;
-
+public class MenuService extends MySqlService{
   public MenuService() {
-    conn = MySqlService.getConnection();
+    super();
   }
 
   /**

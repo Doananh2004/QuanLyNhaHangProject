@@ -2,26 +2,25 @@ package vn.trandoananh.quanlynhahang;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import vn.trandoananh.quanlynhahang.Utils.MySqlService;
 
-import java.sql.Connection;
-
 public class AppQuanLyNhaHang extends Application {
   public static Stage primaryStage;
-  private Connection conn;
+  MySqlService database = new MySqlService();
 
   @Override
   public void start(Stage stage) {
+    primaryStage = stage;
     primaryStage.setTitle("App Quản Lý Nhà Hàng");
-    conn = MySqlService.getConnection();
-    if(conn != null){
+    if(database.conn != null){
       try {
-        showUI("/vn/trandoananh/quanlynhahang/QuanLyNhaHangGUI.fxml");
-      }catch (Exception e){
-        e.printStackTrace();
+        showUI("/vn/trandoananh/quanlynhahang/gui/QuanLyNhaHangGUI.fxml");
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     } else {
       Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -34,10 +33,15 @@ public class AppQuanLyNhaHang extends Application {
     primaryStage.show();
   }
 
+  public static Stage getPrimaryStage() {
+    return primaryStage;
+  }
+
   // Generic method to switch between UIs
   public static void showUI(String fxmlFile) throws Exception {
     FXMLLoader loader = new FXMLLoader(AppQuanLyNhaHang.class.getResource(fxmlFile));
-    Scene scene = new Scene(loader.load());
+    Parent root = loader.load();
+    Scene scene = new Scene(root);
     primaryStage.setScene(scene);
     primaryStage.show();
   }

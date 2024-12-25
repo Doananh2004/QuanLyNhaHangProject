@@ -1,14 +1,11 @@
 package vn.trandoananh.quanlynhahang.Utils;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class BanAnService {
-  private final Connection conn;
-
+public class BanAnService extends MySqlService{
   public BanAnService(){
-    conn = MySqlService.getConnection();
+    super();
   }
 
   /**

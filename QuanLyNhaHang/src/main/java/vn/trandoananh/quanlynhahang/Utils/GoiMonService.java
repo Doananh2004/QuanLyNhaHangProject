@@ -7,11 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Vector;
 
-public class GoiMonService {
-  private final Connection conn;
-
+public class GoiMonService extends MySqlService{
   public GoiMonService(){
-    conn = MySqlService.getConnection();
+    super();
   }
 
   /**

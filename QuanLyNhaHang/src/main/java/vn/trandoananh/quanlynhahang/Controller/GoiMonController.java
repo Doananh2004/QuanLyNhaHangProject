@@ -4,8 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import vn.trandoananh.quanlynhahang.Models.MonAn;
 import vn.trandoananh.quanlynhahang.Utils.BanAnService;
@@ -14,7 +13,6 @@ import vn.trandoananh.quanlynhahang.Utils.MenuService;
 
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Objects;
 import java.util.Vector;
 
 public class GoiMonController {
@@ -39,8 +37,6 @@ public class GoiMonController {
   @FXML
   private TableColumn<MonAn, Integer> colDonGia;
 
-  @FXML
-  private ImageView imgSearch;
 
   private final MenuService menuService = new MenuService();
   private final GoiMonService goiMonService = new GoiMonService();
@@ -52,11 +48,21 @@ public class GoiMonController {
   private final ObservableList<MonAn> dsMonAn = FXCollections.observableArrayList();
 
   public void initialize() {
-    imgSearch.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/vn/trandoananh/images/search.png"))));
-
-    colMaMonAn.setCellValueFactory(cellData -> cellData.getValue().maMonAnProperty());
-    colTenMonAn.setCellValueFactory(cellData -> cellData.getValue().tenMonAnProperty());
-    colDonGia.setCellValueFactory(cellData -> cellData.getValue().donGiaProperty().asObject());
+    if (colMaMonAn != null) {
+      colMaMonAn.setCellValueFactory(new PropertyValueFactory<>("maMonAn"));
+    } else {
+      System.err.println("colMaMonAn is null!");
+    }
+    if (colTenMonAn != null) {
+      colTenMonAn.setCellValueFactory(new PropertyValueFactory<>("tenMonAn"));
+    } else {
+      System.err.println("colTenMonAn is null!");
+    }
+    if (colDonGia != null) {
+      colDonGia.setCellValueFactory(new PropertyValueFactory<>("donGia"));
+    } else {
+      System.err.println("colDonGia is null!");
+    }
 
     tblDsMenuNhaHang.setItems(dsMonAn);
 

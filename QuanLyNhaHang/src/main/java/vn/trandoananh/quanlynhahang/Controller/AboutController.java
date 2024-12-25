@@ -47,6 +47,6 @@ public class AboutController {
     tblInfoMember.setItems(members);
 
     // Hiển thị logo
-    logoImage.setImage(new Image(Objects.requireNonNull(getClass().getResource("/vn/trandoananh/images/restaurant.png")).toString()));
+    logoImage.setImage(new Image(Objects.requireNonNull(getClass().getResource("/vn/trandoananh/quanlynhahang/images/restaurant.png")).toString()));
   }
 }

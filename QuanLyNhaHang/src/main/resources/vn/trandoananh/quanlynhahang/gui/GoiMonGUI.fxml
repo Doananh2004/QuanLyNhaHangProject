@@ -20,7 +20,9 @@
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
-         <ImageView fx:id="imgSearch" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true" />
+         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../images/search.png"/>
+         </ImageView>
          <TextField fx:id="txtTimKiem" promptText="Tìm kiếm..." />
       </HBox>
    </top>
@@ -63,7 +65,7 @@
                   </font>
                   <graphic>
                      <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@vn/trandoananh/quanlynhahang/images/add.png" />
+                        <Image url="@../images/add.png" />
                      </ImageView>
                   </graphic>
                </Button>

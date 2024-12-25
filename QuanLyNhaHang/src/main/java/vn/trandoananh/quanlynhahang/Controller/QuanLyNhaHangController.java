@@ -10,16 +10,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.TextAlignment;
+import javafx.scene.text.Font;
 import vn.trandoananh.quanlynhahang.AppQuanLyNhaHang;
 import vn.trandoananh.quanlynhahang.Models.MonAn;
 import vn.trandoananh.quanlynhahang.Utils.BanAnService;
 import vn.trandoananh.quanlynhahang.Utils.GoiMonService;
 
 import java.text.DecimalFormat;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Vector;
+import java.util.*;
 
 public class QuanLyNhaHangController {
   @FXML
@@ -71,21 +69,19 @@ public class QuanLyNhaHangController {
   private Button btnXacNhanThanhToan;
 
   @FXML
-  private VBox floorAndTablesPanel;
-
-  @FXML
-  private Label[] banAn;
+  private GridPane pnDsBanAn;
 
   private String tangDaChon = "1";
-  private final String banDaChon = "#";
+  private String banDaChon = "#";
   private final ObservableList<MonAn> thucDonData = FXCollections.observableArrayList();
+  private final Map<String, HBox> tableStatusMap = new HashMap<>();
 
   @FXML
-  public void initialize() {
+  public void initialize(){
     initializeTableColumns();
     comboTang.setItems(FXCollections.observableArrayList("1", "2", "3"));
     comboTang.setValue("1");
-    setupBanAnPane();
+    populateTableGrid(12);
     addEvents();
   }
 
@@ -104,7 +100,7 @@ public class QuanLyNhaHangController {
     menuAdvancedMenu.setOnAction(_ -> {
       DanhSachMenuController danhSachMenuController = new DanhSachMenuController();
       try {
-        AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/DanhSachMenu.fxml");
+        AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/gui/DanhSachMenu.fxml");
         danhSachMenuController.initialize();
       } catch (Exception e) {
         throw new RuntimeException(e);
@@ -114,7 +110,7 @@ public class QuanLyNhaHangController {
     menuHelpAbout.setOnAction(_ -> {
       AboutController aboutController = new AboutController();
       try {
-        AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/AboutGUI.fxml");
+        AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/gui/AboutGUI.fxml");
         aboutController.initialize();
       } catch (Exception e) {
         throw new RuntimeException(e);
@@ -151,7 +147,7 @@ public class QuanLyNhaHangController {
 //    showAlert("Vui lòng chọn bàn ăn trước khi thêm món!");
     if(!banDaChon.equals("#")){
       GoiMonController goiMonController = new GoiMonController();
-      AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/GoiMonGUI.fxml");
+      AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/gui/GoiMonGUI.fxml");
       goiMonController.initialize();
       goiMonController.initData(tangDaChon,banDaChon);
     } else {
@@ -235,7 +231,7 @@ public class QuanLyNhaHangController {
       if (!dsThucDon.isEmpty()) {
         // Create and show the export information dialog
         XuatThongTinController xuatThongTinController = new XuatThongTinController();
-        AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/XuatThongTinGUI.fxml");
+        AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/gui/XuatThongTinGUI.fxml");
         xuatThongTinController.initialize(dsThucDon);
 
       } else {
@@ -314,67 +310,73 @@ public class QuanLyNhaHangController {
     alert.showAndWait();
   }
 
-  private void setupBanAnPane() {
-    GridPane pnDsBanAn = new GridPane();
-    pnDsBanAn.setHgap(10); // Khoảng cách ngang giữa các phần tử
-    pnDsBanAn.setVgap(10); // Khoảng cách dọc giữa các phần tử
-    pnDsBanAn.setAlignment(Pos.CENTER); // Căn giữa toàn bộ bảng trong container
+  private void populateTableGrid(int numberOfTables) {
+    pnDsBanAn.getChildren().clear(); // Clear existing nodes
+    tableStatusMap.clear(); // Clear the map
 
-    VBox[] pnBanAn = new VBox[12];
-    HBox[] pnStatusBanAn = new HBox[12]; // Cập nhật từ Pane[] sang VBox[]
-    banAn = new Label[12];
+    int columns = 3; // Number of columns in the grid
+    int rowIndex = 0;
+    int columnIndex = 0;
 
-    for (int i = 0; i < 12; i++) {
-      banAn[i] = new Label("Bàn " + (i + 1));
-      banAn[i].setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/vn/trandoananh/quanlynhahang/images/table.png")))));
-      banAn[i].setStyle("-fx-background-color: transparent;");
-      banAn[i].setContentDisplay(ContentDisplay.TOP);
-      banAn[i].setTextAlignment(TextAlignment.CENTER);
+    for (int i = 1; i <= numberOfTables; i++) {
+      VBox pnBanAn = new VBox();
+      pnBanAn.setAlignment(Pos.CENTER);
+      pnBanAn.setSpacing(5);
+      pnBanAn.setPrefSize(90, 100);
 
-      // Tạo HBox cho trạng thái bàn
-      pnStatusBanAn[i] = new HBox();
-      pnStatusBanAn[i].setPrefHeight(10); // Chiều cao cố định
+      HBox pnStatusBanAn = new HBox();
+      pnStatusBanAn.setAlignment(Pos.CENTER);
+      pnStatusBanAn.setPrefSize(80, 20);
+      pnStatusBanAn.setStyle("-fx-background-color: lightgreen;"); // Default to "active"
 
-      // Tạo VBox cho mỗi bàn ăn
-      pnBanAn[i] = new VBox();
-      pnBanAn[i].setSpacing(5); // Khoảng cách giữa các phần tử trong VBox
-      pnBanAn[i].setAlignment(Pos.CENTER); // Căn giữa nội dung trong VBox
-      pnBanAn[i].setStyle("-fx-border-color: lightgray; -fx-border-width: 2; -fx-border-style: solid;");
-      pnBanAn[i].getChildren().addAll(pnStatusBanAn[i], banAn[i]);
+      pnBanAn.getChildren().add(pnStatusBanAn);
 
-      // Thêm VBox vào GridPane
-      int row = i / 4; // 4 bàn mỗi hàng
-      int col = i % 4;
-      pnDsBanAn.add(pnBanAn[i], col, row);
+      ImageView tableIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/vn/trandoananh/quanlynhahang/images/table.png"))));
+      tableIcon.setFitWidth(50);
+      tableIcon.setFitHeight(50);
+      tableIcon.setPreserveRatio(true);
+
+      pnBanAn.getChildren().add(tableIcon);
+
+      Label tableLabel = new Label("Table " + i);
+      tableLabel.setFont(Font.font("System Bold", 12));
+      pnBanAn.getChildren().add(tableLabel);
+
+      String key = comboTang.getSelectionModel().getSelectedItem() + "_" + i;
+      tableStatusMap.put(key, pnStatusBanAn); // Add the HBox to the map
+
+      int finalI = i;
+      pnBanAn.setOnMouseClicked(event -> handleTableSelection(finalI));
+
+      pnDsBanAn.add(pnBanAn, columnIndex, rowIndex);
+
+      columnIndex++;
+      if (columnIndex == columns) {
+        columnIndex = 0;
+        rowIndex++;
+      }
     }
-
-    // Gán GridPane vào một khu vực trên giao diện chính
-    floorAndTablesPanel.getChildren().add(pnDsBanAn);
-
-    // Cập nhật trạng thái bàn ăn
-    capNhatTrangThaiBanAn();
   }
 
   private void capNhatTrangThaiBanAn() {
-    // Duyệt qua các tầng
     for (int i = 1; i <= 3; i++) {
       for (int j = 1; j <= 12; j++) {
         String tang = String.valueOf(i);
         String ban = String.valueOf(j);
 
-        // Kiểm tra số lượng món ăn trên bàn
+        // Check the number of dishes on the table
         GoiMonService goiMonService = new GoiMonService();
         int soLuongMonAn = goiMonService.laySoLuongMonAn(tang, ban);
         String trangThai = soLuongMonAn > 0 ? "busy" : "active";
 
-        // Cập nhật trạng thái bàn ăn
+        // Update the status in the backend
         BanAnService banAnService = new BanAnService();
         banAnService.setTrangThaiBanAn(tang, ban, trangThai);
 
-        // Cập nhật giao diện
-        if (comboTang.getSelectionModel().getSelectedItem().equals(tang)) {
-          HBox[] pnStatusBanAn = new HBox[12];
-          HBox pnStatus = pnStatusBanAn[j - 1];
+        // Update the UI
+        String key = tang + "_" + ban;
+        if (tableStatusMap.containsKey(key)) {
+          HBox pnStatus = tableStatusMap.get(key);
           if (trangThai.equals("active")) {
             pnStatus.setStyle("-fx-background-color: green;");
           } else if (trangThai.equals("busy")) {
@@ -383,5 +385,13 @@ public class QuanLyNhaHangController {
         }
       }
     }
+  }
+
+  private void handleTableSelection(int tableNumber) {
+    System.out.println("Selected Table: " + tableNumber);
+    // Add your handling logic here (e.g., update details, highlight selection)
+    banDaChon = String.valueOf(tableNumber);
+    selectedTableLabel.setText("Bàn " + banDaChon + " Tầng " + tangDaChon);
+    updateTableData(tangDaChon, banDaChon);
   }
 }

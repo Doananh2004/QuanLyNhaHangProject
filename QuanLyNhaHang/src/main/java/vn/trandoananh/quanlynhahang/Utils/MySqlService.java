@@ -6,15 +6,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class MySqlService {
-  private static final String URL = "jdbc:mysql://127.0.0.1:3306/database_quanlynhahang";
-  private static final String USER = "root";
-  private static final String PASSWORD = "";
-  private static Connection conn;
+  public Connection conn;
 
   /**
    * Phương thức khởi tạo để thiết lập kết nối cơ sở dữ liệu.
    */
   public MySqlService() {
+    String URL = "jdbc:mysql://127.0.0.1:3306/database_quanlynhahang";
+    String USER = "root";
+    String PASSWORD = "";
     try {
       Class.forName("com.mysql.cj.jdbc.Driver");
       conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -29,7 +29,7 @@ public class MySqlService {
    *
    * @return Kết nối cơ sở dữ liệu hoặc null nếu kết nối không khả dụng.
    */
-  public static Connection getConnection() {
+  public Connection getConnection() {
     return conn;
   }
 
