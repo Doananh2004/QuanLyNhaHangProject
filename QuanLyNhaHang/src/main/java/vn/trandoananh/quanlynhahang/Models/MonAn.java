@@ -84,11 +84,6 @@ public class MonAn implements Serializable {
     return soLuong;
   }
 
-  // Getter cho thanhTien
-  public int getThanhTien() {
-    return thanhTien.get();
-  }
-
   private void updateThanhTien() {
     this.thanhTien.set(this.donGia.get() * this.soLuong.get());
   }

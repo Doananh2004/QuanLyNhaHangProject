@@ -323,6 +323,7 @@ public class QuanLyNhaHangController {
       pnBanAn.setAlignment(Pos.CENTER);
       pnBanAn.setSpacing(5);
       pnBanAn.setPrefSize(90, 100);
+      pnBanAn.setStyle("-fx-border-color: black;");
 
       HBox pnStatusBanAn = new HBox();
       pnStatusBanAn.setAlignment(Pos.CENTER);
