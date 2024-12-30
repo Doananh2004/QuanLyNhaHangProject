@@ -21,9 +21,14 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
          <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-            <Image url="@../images/search.png"/>
+            <Image url="@../images/search.png" />
          </ImageView>
          <TextField fx:id="txtTimKiem" promptText="Tìm kiếm..." />
+         <Button fx:id="btnVeTrangChu" mnemonicParsing="false" text="Về trang chủ">
+            <font>
+               <Font name="System Bold" size="14.0" />
+            </font>
+         </Button>
       </HBox>
    </top>
    <center>

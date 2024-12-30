@@ -95,7 +95,7 @@
                         </rowConstraints>
                     </GridPane>
                 </VBox>
-                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0"><!-- Logo -->
+                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0"> <!-- Logo -->
                     <ImageView fitHeight="100.0" fitWidth="200" preserveRatio="true">
                         <Image url="@../images/restaurant.png"/>
                     </ImageView>

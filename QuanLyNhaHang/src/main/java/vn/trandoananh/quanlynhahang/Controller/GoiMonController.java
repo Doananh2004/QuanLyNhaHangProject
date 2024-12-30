@@ -3,18 +3,23 @@ package vn.trandoananh.quanlynhahang.Controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import vn.trandoananh.quanlynhahang.AppQuanLyNhaHang;
 import vn.trandoananh.quanlynhahang.Models.MonAn;
 import vn.trandoananh.quanlynhahang.Utils.BanAnService;
 import vn.trandoananh.quanlynhahang.Utils.GoiMonService;
 import vn.trandoananh.quanlynhahang.Utils.MenuService;
 
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Vector;
 
-public class GoiMonController {
+public class GoiMonController implements Initializable {
   @FXML
   private TextField txtTimKiem;
 
@@ -36,6 +41,9 @@ public class GoiMonController {
   @FXML
   private TableColumn<MonAn, Integer> colDonGia;
 
+  @FXML
+  private Button btnVeTrangChu;
+
 
   private final MenuService menuService = new MenuService();
   private final GoiMonService goiMonService = new GoiMonService();
@@ -46,8 +54,10 @@ public class GoiMonController {
 
   private final ObservableList<MonAn> dsMonAn = FXCollections.observableArrayList();
 
-  public void initialize() {
-    colMaMonAn.setCellValueFactory(cellData -> cellData.getValue().maMonAnProperty());
+  @Override
+  public void initialize(URL url, ResourceBundle resourceBundle) {
+    hienThiMenuNhaHang();
+    colMaMonAn.setCellValueFactory(new PropertyValueFactory<>("maMonAn"));
     colTenMonAn.setCellValueFactory(cellData -> cellData.getValue().tenMonAnProperty());
     colDonGia.setCellValueFactory(cellData -> cellData.getValue().donGiaProperty().asObject());
 
@@ -56,6 +66,14 @@ public class GoiMonController {
     txtTimKiem.textProperty().addListener((_, _, newValue) -> locThongTin(newValue));
 
     btnThem.setOnAction(_ -> themMonAn());
+
+    btnVeTrangChu.setOnAction(_ -> {
+      try {
+        veTrangChu();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
   }
 
   public void initData(String maTang, String maBan) {
@@ -63,6 +81,10 @@ public class GoiMonController {
     this.maTang = maTang;
     this.maBan = maBan;
     hienThiMenuNhaHang();
+  }
+
+  private void veTrangChu() throws Exception {
+    AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/gui/QuanLyNhaHangGUI.fxml");
   }
 
   private void hienThiMenuNhaHang() {
@@ -101,8 +123,6 @@ public class GoiMonController {
             // Display total price in an alert
             DecimalFormat df = new DecimalFormat("#,###");
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Thêm món thành công!", ButtonType.OK);
-            alert.setHeaderText("Tổng giá: " + df.format((long) selectedMonAn.getDonGia() * soLuong));
-            alert.show();
 
             // Refresh the menu list
             hienThiThucDonBanAn(maTang, maBan);

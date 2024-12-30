@@ -144,11 +144,9 @@ public class QuanLyNhaHangController {
   }
 
   private void handleAddMenuItem() throws Exception {
-//    showAlert("Vui lòng chọn bàn ăn trước khi thêm món!");
     if(!banDaChon.equals("#")){
       GoiMonController goiMonController = new GoiMonController();
       AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/gui/GoiMonGUI.fxml");
-      goiMonController.initialize();
       goiMonController.initData(tangDaChon,banDaChon);
     } else {
       Alert alert = new Alert(Alert.AlertType.WARNING);
