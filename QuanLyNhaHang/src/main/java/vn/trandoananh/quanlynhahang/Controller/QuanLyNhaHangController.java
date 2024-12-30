@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import vn.trandoananh.quanlynhahang.AppQuanLyNhaHang;
 import vn.trandoananh.quanlynhahang.Models.MonAn;
+import vn.trandoananh.quanlynhahang.Models.data;
 import vn.trandoananh.quanlynhahang.Utils.BanAnService;
 import vn.trandoananh.quanlynhahang.Utils.GoiMonService;
 
@@ -71,7 +72,7 @@ public class QuanLyNhaHangController {
   @FXML
   private GridPane pnDsBanAn;
 
-  private String tangDaChon = "1";
+  private final String tangDaChon = "1";
   private String banDaChon = "#";
   private final ObservableList<MonAn> thucDonData = FXCollections.observableArrayList();
   private final Map<String, HBox> tableStatusMap = new HashMap<>();
@@ -81,6 +82,7 @@ public class QuanLyNhaHangController {
     initializeTableColumns();
     comboTang.setItems(FXCollections.observableArrayList("1", "2", "3"));
     comboTang.setValue("1");
+    data.maTang = comboTang.getValue();
     populateTableGrid(12);
     addEvents();
   }
@@ -136,7 +138,7 @@ public class QuanLyNhaHangController {
     btnXacNhanThanhToan.setOnAction(_ -> handleConfirmPayment());
 
     comboTang.setOnAction(_ -> {
-      tangDaChon = comboTang.getValue();
+      data.maTang = comboTang.getValue();
       selectedTableLabel.setText("Bàn " + banDaChon + " Tầng " + tangDaChon);
       updateTableData(tangDaChon,banDaChon);
       capNhatTrangThaiBanAn();
@@ -147,7 +149,6 @@ public class QuanLyNhaHangController {
     if(!banDaChon.equals("#")){
       GoiMonController goiMonController = new GoiMonController();
       AppQuanLyNhaHang.showUI("/vn/trandoananh/quanlynhahang/gui/GoiMonGUI.fxml");
-      goiMonController.initData(tangDaChon,banDaChon);
     } else {
       Alert alert = new Alert(Alert.AlertType.WARNING);
       alert.setTitle("Cảnh báo");
@@ -329,7 +330,7 @@ public class QuanLyNhaHangController {
       HBox pnStatusBanAn = new HBox();
       pnStatusBanAn.setAlignment(Pos.CENTER);
       pnStatusBanAn.setPrefSize(80, 20);
-      pnStatusBanAn.setStyle("-fx-background-color: lightgreen;"); // Default to "active"
+      pnStatusBanAn.setStyle("-fx-background-color: green;"); // Default to "active"
 
       pnBanAn.getChildren().add(pnStatusBanAn);
 
@@ -360,7 +361,7 @@ public class QuanLyNhaHangController {
     }
   }
 
-  private void capNhatTrangThaiBanAn() {
+  public void capNhatTrangThaiBanAn() {
     for (int i = 1; i <= 3; i++) {
       for (int j = 1; j <= 12; j++) {
         String tang = String.valueOf(i);
@@ -393,6 +394,7 @@ public class QuanLyNhaHangController {
     System.out.println("Selected Table: " + tableNumber);
     // Add your handling logic here (e.g., update details, highlight selection)
     banDaChon = String.valueOf(tableNumber);
+    data.maBan = banDaChon;
     selectedTableLabel.setText("Bàn " + banDaChon + " Tầng " + tangDaChon);
     updateTableData(tangDaChon, banDaChon);
   }

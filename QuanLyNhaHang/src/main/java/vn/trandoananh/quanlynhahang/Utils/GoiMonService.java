@@ -1,6 +1,7 @@
 package vn.trandoananh.quanlynhahang.Utils;
 
 import vn.trandoananh.quanlynhahang.Models.MonAn;
+import vn.trandoananh.quanlynhahang.Models.data;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,10 +25,10 @@ public class GoiMonService extends MySqlService{
     int soLuongBanDau = kiemTraMonAn(maTang, maBan, monAn.getMaMonAn());
     if (soLuongBanDau == 0) {
       try {
-        String sql = "insert into goimon values (?,?,?,?,?,?)";
+        String sql = "INSERT INTO `goimon`(`MaTang`, `MaBan`, `MaMonAn`, `TenMonAn`, `DonGia`, `SoLuong`) VALUES (?,?,?,?,?,?)";
         PreparedStatement preStatement = conn.prepareStatement(sql);
-        preStatement.setString(1, maTang);
-        preStatement.setString(2, maBan);
+        preStatement.setString(1, data.maTang);
+        preStatement.setString(2, data.maBan);
         preStatement.setString(3, monAn.getMaMonAn());
         preStatement.setString(4, monAn.getTenMonAn());
         preStatement.setInt(5, monAn.getDonGia());

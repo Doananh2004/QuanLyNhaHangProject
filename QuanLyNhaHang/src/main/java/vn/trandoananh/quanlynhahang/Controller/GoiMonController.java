@@ -6,9 +6,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
 import vn.trandoananh.quanlynhahang.AppQuanLyNhaHang;
 import vn.trandoananh.quanlynhahang.Models.MonAn;
+import vn.trandoananh.quanlynhahang.Models.data;
 import vn.trandoananh.quanlynhahang.Utils.BanAnService;
 import vn.trandoananh.quanlynhahang.Utils.GoiMonService;
 import vn.trandoananh.quanlynhahang.Utils.MenuService;
@@ -56,6 +56,7 @@ public class GoiMonController implements Initializable {
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
+    initData(data.maTang, data.maBan);
     hienThiMenuNhaHang();
     colMaMonAn.setCellValueFactory(new PropertyValueFactory<>("maMonAn"));
     colTenMonAn.setCellValueFactory(cellData -> cellData.getValue().tenMonAnProperty());
@@ -78,7 +79,6 @@ public class GoiMonController implements Initializable {
 
   public void initData(String maTang, String maBan) {
     System.out.println("Gọi món bàn " + maBan + " tầng " +maTang);
-    this.maTang = maTang;
     this.maBan = maBan;
     hienThiMenuNhaHang();
   }
@@ -117,6 +117,7 @@ public class GoiMonController implements Initializable {
           int soLuong = Integer.parseInt(strSoLuong);
 
           if (soLuong >= 1) {
+            System.out.println(maBan);
             // Call the service to add the MonAn to the order
             goiMonService.themMonAn(maTang, maBan, selectedMonAn, soLuong);
 
@@ -175,20 +176,17 @@ public class GoiMonController implements Initializable {
   }
 
   private void capNhatTrangThaiBanAn(String maTang) {
-    for(int j=1;j<=12;j++) {
+    QuanLyNhaHangController controller = new QuanLyNhaHangController();
+
+    for (int j = 1; j <= 12; j++) {
       String ban = String.valueOf(j);
       // Kiểm tra số lượng món ăn trên bàn
       GoiMonService goiMonService = new GoiMonService();
       int soLuongMonAn = goiMonService.laySoLuongMonAn(maTang, ban);
       String trangThai = soLuongMonAn > 0 ? "busy" : "active";
 
-      HBox[] pnStatusBanAn = new HBox[12];
-      HBox pnStatus = pnStatusBanAn[j - 1];
-      if (trangThai.equals("active")) {
-        pnStatus.setStyle("-fx-background-color: green;");
-      } else if (trangThai.equals("busy")) {
-        pnStatus.setStyle("-fx-background-color: red;");
-      }
+      // Cập nhật trạng thái bàn trong QuanLyNhaHangController
+      controller.capNhatTrangThaiBanAn();
     }
   }
 }
