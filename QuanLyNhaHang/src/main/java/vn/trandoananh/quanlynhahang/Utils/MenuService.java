@@ -8,9 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class MenuService extends MySqlService{
-  public MenuService() {
-    super();
-  }
+  private static final String URL = "jdbc:mysql://127.0.0.1:3306/database_quanlynhahang";
+  private static final String USER = "root";
+  private static final String PASSWORD = "";
 
   /**
    * Lấy danh sách món ăn từ cơ sở dữ liệu và trả về dưới dạng ObservableList để sử dụng trong JavaFX.
@@ -19,8 +19,8 @@ public class MenuService extends MySqlService{
    */
   public ObservableList<MonAn> layDanhSachMenu() {
     ObservableList<MonAn> dsMonAn = FXCollections.observableArrayList();
-    try {
-      String sql = "SELECT * FROM menu_nhahang";
+    String sql = "SELECT * FROM menu_nhahang";
+    try{
       PreparedStatement preStatement = conn.prepareStatement(sql);
       ResultSet result = preStatement.executeQuery();
       while (result.next()) {
