@@ -367,22 +367,20 @@ public class QuanLyNhaHangController {
         String tang = String.valueOf(i);
         String ban = String.valueOf(j);
 
-        // Check the number of dishes on the table
-        GoiMonService goiMonService = new GoiMonService();
-        int soLuongMonAn = goiMonService.laySoLuongMonAn(tang, ban);
-        String trangThai = soLuongMonAn > 0 ? "busy" : "active";
+        // Get the current status from the database
+        BanAnService banAnService = new BanAnService();
+        String trangThai = banAnService.getTrangThaiBanAn(tang, ban);
 
         // Update the status in the backend
-        BanAnService banAnService = new BanAnService();
         banAnService.setTrangThaiBanAn(tang, ban, trangThai);
 
         // Update the UI
         String key = tang + "_" + ban;
         if (tableStatusMap.containsKey(key)) {
           HBox pnStatus = tableStatusMap.get(key);
-          if (trangThai.equals("active")) {
+          if ("active".equals(trangThai)) {
             pnStatus.setStyle("-fx-background-color: green;");
-          } else if (trangThai.equals("busy")) {
+          } else if ("busy".equals(trangThai)) {
             pnStatus.setStyle("-fx-background-color: red;");
           }
         }
