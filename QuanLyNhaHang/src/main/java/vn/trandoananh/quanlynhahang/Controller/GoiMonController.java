@@ -180,13 +180,7 @@ public class GoiMonController implements Initializable {
 
     for (int j = 1; j <= 12; j++) {
       String ban = String.valueOf(j);
-      // Kiểm tra số lượng món ăn trên bàn
-      GoiMonService goiMonService = new GoiMonService();
-      int soLuongMonAn = goiMonService.laySoLuongMonAn(maTang, ban);
-      String trangThai = soLuongMonAn > 0 ? "busy" : "active";
-
-      // Cập nhật trạng thái bàn trong QuanLyNhaHangController
-      controller.capNhatTrangThaiBanAn();
+      controller.capNhatTrangThaiBanAn(maTang, ban);
     }
   }
 }

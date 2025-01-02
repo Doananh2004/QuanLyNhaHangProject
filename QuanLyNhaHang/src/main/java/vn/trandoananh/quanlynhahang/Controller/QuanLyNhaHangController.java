@@ -84,6 +84,7 @@ public class QuanLyNhaHangController {
     comboTang.setValue("1");
     data.maTang = comboTang.getValue();
     populateTableGrid(12);
+    refreshTableGrid(12);
     addEvents();
   }
 
@@ -141,7 +142,7 @@ public class QuanLyNhaHangController {
       data.maTang = comboTang.getValue();
       selectedTableLabel.setText("Bàn " + banDaChon + " Tầng " + tangDaChon);
       updateTableData(tangDaChon,banDaChon);
-      capNhatTrangThaiBanAn();
+      capNhatTrangThaiBanAn(tangDaChon,banDaChon);
     });
   }
 
@@ -171,7 +172,7 @@ public class QuanLyNhaHangController {
       updateTableData(tangDaChon,banDaChon);
 
       // Update the table or other related UI components
-      capNhatTrangThaiBanAn();
+      capNhatTrangThaiBanAn(tangDaChon,banDaChon);
 
       // Log the removal for debugging purposes
       System.out.println("Removed item: " + selectedItem.getTenMonAn());
@@ -266,7 +267,7 @@ public class QuanLyNhaHangController {
           GoiMonService goiMonService = new GoiMonService();
           goiMonService.xoaMonAn(tangDaChon, banDaChon);
           updateTableData(tangDaChon, banDaChon);
-          capNhatTrangThaiBanAn();
+          capNhatTrangThaiBanAn(tangDaChon,banDaChon);
         }
       } else {
         // If the table is empty, show a warning
@@ -361,11 +362,9 @@ public class QuanLyNhaHangController {
     }
   }
 
-  public void capNhatTrangThaiBanAn() {
+  public void capNhatTrangThaiBanAn(String tang, String ban) {
     for (int i = 1; i <= 3; i++) {
       for (int j = 1; j <= 12; j++) {
-        String tang = String.valueOf(i);
-        String ban = String.valueOf(j);
 
         // Get the current status from the database
         BanAnService banAnService = new BanAnService();
@@ -386,6 +385,19 @@ public class QuanLyNhaHangController {
         }
       }
     }
+  }
+
+  public void capNhatTatCaTrangThaiBanAn() {
+    for (int i = 1; i <= 3; i++) {
+      for (int j = 1; j <= 12; j++) {
+        capNhatTrangThaiBanAn(String.valueOf(i), String.valueOf(j));
+      }
+    }
+  }
+
+  public void refreshTableGrid(int numberOfTables) {
+    populateTableGrid(numberOfTables);
+    capNhatTatCaTrangThaiBanAn();
   }
 
   private void handleTableSelection(int tableNumber) {
