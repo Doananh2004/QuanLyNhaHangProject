@@ -83,7 +83,6 @@ public class QuanLyNhaHangController {
     comboTang.setItems(FXCollections.observableArrayList("1", "2", "3"));
     comboTang.setValue("1");
     data.maTang = comboTang.getValue();
-    populateTableGrid(12);
     refreshTableGrid(12);
     addEvents();
   }
